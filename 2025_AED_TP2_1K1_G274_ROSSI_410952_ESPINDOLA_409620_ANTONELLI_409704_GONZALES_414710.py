@@ -1,40 +1,41 @@
 # calcular monto final...
 def calcular_monto_final(base, id_impuesto):
+    impuesto = 0
     #algoritmo 1...
-    if id_impuesto == '1' and base <= 300000:
-        impuesto = 0
-    elif base > 300000:
-        excedente = base - 300000
-        impuesto = excedente * 25 / 100
-    monto_final = base - impuesto
+    if id_impuesto in '1 ':
+        if base <= 300000:
+            impuesto = 0
+        elif base > 300000:
+            excedente = base - 300000
+            impuesto = excedente * 25 / 100
 
     #algoritmo 2...
-    if id_impuesto == '2' and base < 50000:
-        impuesto = 50
-    elif base >= 50000:
-        impuesto = 100
-    monto_final = base - impuesto
+    elif id_impuesto in '2 ':
+        if base < 50000:
+            impuesto = 50
+        elif base >= 50000:
+            impuesto = 100
 
     #algoritmo 3...
-    if id_impuesto == '3':
+    elif id_impuesto in '3 ':
         impuesto = base * 3 / 100
+
     monto_final = base - impuesto
-    return monto_final
+    return round(monto_final, 2)
 
 
 # calcular monto base...
-def calcular_monto_base(mon, nominal, id_comision):
+def calcular_monto_base(nominal, id_comision):
     nominal = int(nominal)
-    monto_base = nominal
+    monto_base = 0
     comision = 0
     monto_fijo = 0
-
     # algoritmo 1...
-    if id_comision == '1' and mon == 'ARS':
+    if id_comision in '1 ':
         comision = nominal * 9 / 100
     
     # algoritmo 2...
-    elif id_comision == '2' and mon == 'USD':
+    elif id_comision in '2 ':
         if nominal < 50000:
             comision = 0
         elif 50000 <= nominal < 80000:
@@ -43,31 +44,32 @@ def calcular_monto_base(mon, nominal, id_comision):
             comision = nominal * 7.8 / 100
     
     # algoritmo 3...
-    elif id_comision == '3' and mon == 'EUR' or 'GBP':
+    elif id_comision in '3 ':
         monto_fijo = 100
         if nominal > 25000:
             comision = nominal * 6 / 100
 
     # algoritmo 4...
-    if id_comision == '4' and nominal <= 100000 and mon == 'JPY':
-        comision = 500
-    if id_comision == '4' and nominal > 100000:
-        comision = 1000
+    elif id_comision in '4 ':
+        if nominal <= 100000:
+            comision = 500
+        
+    elif id_comision in '4 ':
+        if nominal > 100000:
+            comision = 1000
 
     # algoritmo 5...
-    if id_comision == '5' and nominal < 500000 and mon == 'ARS':
-        comision = 0
-    elif id_comision == '5' and nominal >= 500000 and mon == 'ARS':
-        comision = nominal * 7 / 100
-    if id_comision == '5' and comision > 50000 and mon == 'ARS':
-        comision = 50000
+    elif id_comision in '5 ':
+        if nominal < 500000:
+            comision = 0
+        elif nominal >= 500000:
+
+            comision = nominal * 7 / 100
+        elif comision > 50000:
+            comision = 50000
 
     # calculo del monto base...
-    if monto_fijo:
-        monto_base = nominal - (monto_fijo + comision)
-    else:
-        monto_base = nominal - comision
-    
+    monto_base = nominal - (monto_fijo + comision)
     return monto_base
 
 
@@ -159,7 +161,7 @@ def principal():
         elif destinatario_valido(cod_ide):
             cant_oper_validas += 1
             # Requerimiento 2 (r4)...
-            monto_base = calcular_monto_base(moneda, monto_nominal, id_calc_com)
+            monto_base = calcular_monto_base(monto_nominal, id_calc_com)
             monto_final = calcular_monto_final(monto_base, id_calc_imp)
             suma_mf_validas += monto_final
             
