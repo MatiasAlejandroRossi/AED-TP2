@@ -29,6 +29,21 @@ def tipo_moneda(cod_orden):
         moneda = 'Moneda incorrecta'
     return moneda
 
+def destinatario_valido(cod_ide):
+    #elimina espacios en blanco
+    cod_ide = cod_ide.strip()
+    if len(cod_ide) == 0:
+        return False
+    tiene_letra_o_digito = False
+    for c in cod_ide:
+        if c.isupper() or c.isdigit():
+            tiene_letra_o_digito = True
+        elif c != '-':
+            return False
+    if not tiene_letra_o_digito:
+        return False
+    return True
+
 
 # calcular monto base...
 def monto_base(moneda):
@@ -64,6 +79,11 @@ def monto_final():
 
 
 def principal():
+    #cantidad para los resultados
+    cant_moneda_invalida = 0
+    cant_dest_invalido = 0
+    cant_operaciones_validas = 0  # <-- agregado para (r3)
+
     # definicion de variables...
     nom_dest = cod_ide = cod_op = monto_nominal = id_calc_com = id_calc_imp = ''
 
@@ -82,7 +102,17 @@ def principal():
         id_calc_imp = linea[52:54]  # identificador algoritmo calculo impositivo...
 
         # procesos...
+        moneda = tipo_moneda(cod_orden)
+        if moneda == 'Moneda incorrecta':
+            cant_moneda_invalida += 1
+            continue
 
+        if not destinatario_valido(cod_ide):
+            cant_dest_invalido += 1
+            continue
+
+         # Aquí está la suma del punto (r3):
+        cant_operaciones_validas += 1
     # cerrar el .txt
     m.close()
 
