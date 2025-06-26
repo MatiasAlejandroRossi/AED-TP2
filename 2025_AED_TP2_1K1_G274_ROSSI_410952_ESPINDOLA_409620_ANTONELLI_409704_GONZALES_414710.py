@@ -156,7 +156,7 @@ def principal():
     suma_ars_finales = 0
     cant_ars_validas = 0
 
-    m = open('ordenes2.txt', 'rt')
+    m = open('ordenes.txt', 'rt')
     timestamp = m.readline()
     total_ordenes = 0
 
