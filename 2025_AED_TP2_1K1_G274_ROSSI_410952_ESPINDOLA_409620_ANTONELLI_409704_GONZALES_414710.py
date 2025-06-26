@@ -171,7 +171,7 @@ def principal():
             cant_minvalida += 1
             invalida = True
 
-        if not destinatario_valido(cod_ide):
+        elif not destinatario_valido(cod_ide):
             cant_binvalido += 1
             invalida = True
 
