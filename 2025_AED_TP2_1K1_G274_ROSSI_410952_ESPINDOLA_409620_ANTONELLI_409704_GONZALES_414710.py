@@ -20,6 +20,10 @@ def calcular_monto_final(base, id_impuesto):
     elif id_impuesto in '3 ':
         impuesto = base * 3 // 100
 
+    # algoritmo 4 y 5...
+    elif id_impuesto in '4 5 ':
+        impuesto = 0
+
     monto_final = base - impuesto
     return round(monto_final, 2)
 
@@ -64,7 +68,22 @@ def calcular_monto_base(nominal, id_comision):
             comision = nominal * 7 // 100
             if comision > 50000:
                 comision = 50000
+    
+    # algoritmo 7...
+    elif id_comision in '7 ':
+        if nominal <= 75000:
+            comision = 3000
+        elif nominal > 75000:
+            excedente = nominal - 75000
+            comision = excedente * 5 // 100
+        if comision > 10000:
+            comision = 10000
 
+    # algoritmo 6 y 8...
+    elif id_comision in '6 8 ':
+        comision = 0
+
+    #calculo del monto base...
     monto_base = nominal - (monto_fijo + comision)
     return monto_base
 
@@ -137,7 +156,7 @@ def principal():
     suma_ars_finales = 0
     cant_ars_validas = 0
 
-    m = open('ordenes.txt', 'rt')
+    m = open('ordenes2.txt', 'rt')
     timestamp = m.readline()
     total_ordenes = 0
 
