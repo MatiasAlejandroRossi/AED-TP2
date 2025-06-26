@@ -53,9 +53,7 @@ def calcular_monto_base(nominal, id_comision):
     elif id_comision in '4 ':
         if nominal <= 100000:
             comision = 500
-
-    elif id_comision in '4 ':
-        if nominal > 100000:
+        elif nominal > 100000:
             comision = 1000
 
     # algoritmo 5...
@@ -64,10 +62,9 @@ def calcular_monto_base(nominal, id_comision):
             comision = 0
         elif nominal >= 500000:
             comision = nominal * 7 // 100
-        elif comision > 50000:
-            comision = 50000
+            if comision > 50000:
+                comision = 50000
 
-    # calculo del monto base...
     monto_base = nominal - (monto_fijo + comision)
     return monto_base
 
@@ -122,39 +119,31 @@ def destinatario_valido(cod_ide):
 
 
 def principal():
-    nom_dest = cod_ide = cod_op = monto_nominal = id_calc_com = id_calc_imp = ''
+    cant_minvalida = 0
+    cant_binvalido = 0
+    cant_oper_validas = 0
+    suma_mf_validas = 0
 
-    cant_minvalida = 0  # moneda inválida
-    cant_binvalido = 0  # beneficiario inválido
-    cant_oper_validas = 0  # operaciones válidas
-    suma_mf_validas = 0  # suma montos finales
+    cant_ARS = cant_USD = cant_EUR = cant_GBP = cant_JPY = 0
 
-    # Contadores r5 a r9 (órdenes para cada moneda válida)
-    cant_ARS = 0
-    cant_USD = 0
-    cant_EUR = 0
-    cant_GBP = 0
-    cant_JPY = 0
-
-    # Variables para r10, r11, r12 (mayor diferencia monto_nominal - monto_final)
     max_diferencia = -1
     cod_orden_max = ''
     monto_nominal_max = 0
     monto_final_max = 0
 
-    # Requerimiento 5...
     nom_primer_benef = None
     cant_nom_primer_benef = 0
 
-    # Requerimiento 6...
-    cant_ordenes = 0
-    op_invalidas_totales = 0
+    suma_ars_finales = 0
+    cant_ars_validas = 0
 
-    # procesamiento del .txt...
     m = open('ordenes.txt', 'rt')
     timestamp = m.readline()
+    total_ordenes = 0
 
     for linea in m:
+        total_ordenes += 1
+
         nom_dest = linea[0:20]
         cod_ide = linea[20:30]
         cod_orden = linea[30:40]
@@ -162,10 +151,11 @@ def principal():
         id_calc_com = linea[50:52]
         id_calc_imp = linea[52:54]
 
-        cant_ordenes += 1
         moneda = tipo_moneda(cod_orden)
+        monto_base = calcular_monto_base(monto_nominal_str, id_calc_com)
+        monto_final = calcular_monto_final(monto_base, id_calc_imp)
+        invalida = False
 
-        # Contar órdenes por moneda válida, sin importar validez beneficiario
         if moneda == 'ARS':
             cant_ARS += 1
         elif moneda == 'USD':
@@ -179,46 +169,45 @@ def principal():
 
         if moneda == 'Moneda incorrecta':
             cant_minvalida += 1
+            invalida = True
 
-        elif not destinatario_valido(cod_ide):
+        if not destinatario_valido(cod_ide):
             cant_binvalido += 1
+            invalida = True
 
-        if destinatario_valido(cod_ide) and moneda != 'Moneda incorrecta':
+        if not invalida:
             cant_oper_validas += 1
-            monto_base = calcular_monto_base(monto_nominal_str, id_calc_com)
-            monto_final = calcular_monto_final(monto_base, id_calc_imp)
             suma_mf_validas += monto_final
-        else:
-            # En caso inválido, monto_final lo calculamos igual para r10
-            monto_base = calcular_monto_base(monto_nominal_str, id_calc_com)
-            monto_final = calcular_monto_final(monto_base, id_calc_imp)
+            if moneda == 'ARS':
+                suma_ars_finales += monto_final
+                cant_ars_validas += 1
 
-        # Calcular diferencia absoluta entre nominal y final para r10
         monto_nominal_int = int(monto_nominal_str.strip())
         diferencia = abs(monto_nominal_int - monto_final)
 
-        # Guardar la primera operación con mayor diferencia
         if diferencia > max_diferencia:
             max_diferencia = diferencia
             cod_orden_max = cod_orden.strip()
             monto_nominal_max = monto_nominal_int
             monto_final_max = monto_final
-        
-        # Requerimiento 5...
+
         if nom_primer_benef is None:
             nom_primer_benef = nom_dest
 
-        # cuantas veces sale el primer beneficiario...
         if nom_dest == nom_primer_benef:
             cant_nom_primer_benef += 1
- 
-    # Requerimiento 6...
-    op_invalidas_totales = cant_minvalida + cant_binvalido
-    porcentaje = op_invalidas_totales * 100 // cant_ordenes
-    
+
     m.close()
 
-# salidas...
+    total_invalidas = cant_minvalida + cant_binvalido
+    porcentaje_invalidas = (total_invalidas * 100) // total_ordenes
+
+    if cant_ars_validas > 0:
+        promedio_ars = suma_ars_finales // cant_ars_validas
+    else:
+        promedio_ars = 0
+
+    # Resultados
     print(' (r1) - Cantidad de ordenes invalidas - moneda no autorizada:', cant_minvalida)
     print(' (r2) - Cantidad de ordenes invalidas - beneficiario mal identificado:', cant_binvalido)
     print(' (r3) - Cantidad de operaciones validas:', cant_oper_validas)
@@ -233,6 +222,8 @@ def principal():
     print(' (r12) - Monto final de esa orden:', monto_final_max)
     print('(r13) - Nombre del primer beneficiario del archivo:', nom_primer_benef)
     print('(r14) - Cantidad de veces que apareció ese mismo nombre:', cant_nom_primer_benef)
-    print('(r15) - Porcentaje de operaciones inválidas sobre el total:', porcentaje)
+    print('(r15) - Porcentaje de operaciones inválidas sobre el total:', porcentaje_invalidas)
+    print('(r16) - Promedio del monto final de órdenes válidas (moneda y beneficiario) en ARS:', promedio_ars)
+
 
 principal()
