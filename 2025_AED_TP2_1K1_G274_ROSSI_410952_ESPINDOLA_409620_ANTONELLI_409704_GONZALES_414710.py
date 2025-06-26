@@ -1,7 +1,7 @@
 # calcular monto final...
 def calcular_monto_final(base, id_impuesto):
     #algoritmo 1...
-    if id_impuesto == 1 and base <= 300000:
+    if id_impuesto == '1' and base <= 300000:
         impuesto = 0
     elif base > 300000:
         excedente = base - 300000
@@ -9,30 +9,32 @@ def calcular_monto_final(base, id_impuesto):
     monto_final = base - impuesto
 
     #algoritmo 2...
-    if id_impuesto == 2 and base < 50000:
+    if id_impuesto == '2' and base < 50000:
         impuesto = 50
     elif base >= 50000:
         impuesto = 100
     monto_final = base - impuesto
 
     #algoritmo 3...
-    if id_impuesto == 3:
+    if id_impuesto == '3':
         impuesto = base * 3 / 100
     monto_final = base - impuesto
     return monto_final
 
 
-
-
 # calcular monto base...
 def calcular_monto_base(mon, nominal, id_comision):
+    nominal = int(nominal)
     monto_base = nominal
+    comision = 0
+    monto_fijo = 0
+
     # algoritmo 1...
-    if id_comision == 1 and mon == 'ARS':
+    if id_comision == '1' and mon == 'ARS':
         comision = nominal * 9 / 100
     
     # algoritmo 2...
-    elif id_comision == 2 and mon == 'USD':
+    elif id_comision == '2' and mon == 'USD':
         if nominal < 50000:
             comision = 0
         elif 50000 <= nominal < 80000:
@@ -41,23 +43,23 @@ def calcular_monto_base(mon, nominal, id_comision):
             comision = nominal * 7.8 / 100
     
     # algoritmo 3...
-    elif id_comision == 3 and mon == 'EUR' or 'GBP':
+    elif id_comision == '3' and mon == 'EUR' or 'GBP':
         monto_fijo = 100
         if nominal > 25000:
             comision = nominal * 6 / 100
 
     # algoritmo 4...
-    if id_comision == 4 and nominal <= 100000 and mon == 'JPY':
+    if id_comision == '4' and nominal <= 100000 and mon == 'JPY':
         comision = 500
-    if id_comision == 4 and nominal > 100000:
+    if id_comision == '4' and nominal > 100000:
         comision = 1000
 
     # algoritmo 5...
-    if id_comision == 5 and nominal < 500000 and mon == 'ARS':
+    if id_comision == '5' and nominal < 500000 and mon == 'ARS':
         comision = 0
-    elif id_comision == 5 and nominal >= 500000 and mon == 'ARS':
+    elif id_comision == '5' and nominal >= 500000 and mon == 'ARS':
         comision = nominal * 7 / 100
-    if id_comision == 5 and comision > 50000 and mon == 'ARS':
+    if id_comision == '5' and comision > 50000 and mon == 'ARS':
         comision = 50000
 
     # calculo del monto base...
@@ -128,7 +130,7 @@ def principal():
     cant_minvalida = 0  # cantidad moneda invalida...
     cant_binvalido = 0  # cantidad beneficiario invalido...
     cant_oper_validas = 0  # cantidad operaciones validas...
-
+    suma_mf_validas = 0 # r4...
     # procesamiento del archivo ordenes.txt...
     m = open('ordenes.txt', 'rt')
     timestamp = m.readline()  # ignora el timestamp...
@@ -156,7 +158,11 @@ def principal():
          # Aquí está la suma del punto (r3):
         elif destinatario_valido(cod_ide):
             cant_oper_validas += 1
-
+            # Requerimiento 2 (r4)...
+            monto_base = calcular_monto_base(moneda, monto_nominal, id_calc_com)
+            monto_final = calcular_monto_final(monto_base, id_calc_imp)
+            suma_mf_validas += monto_final
+            
     # cerrar el .txt
     m.close()
 
