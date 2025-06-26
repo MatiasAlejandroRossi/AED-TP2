@@ -1,9 +1,27 @@
 # calcular monto final...
 def calcular_monto_final(base, id_impuesto):
-    if base <= 500000:
-        monto_final = round(monto_base - monto_base * 21 / 100, 2)
-    else:
-        monto_final = monto_base
+    #algoritmo 1...
+    if id_impuesto == 1 and base <= 300000:
+        impuesto = 0
+    elif base > 300000:
+        excedente = base - 300000
+        impuesto = excedente * 25 / 100
+    monto_final = base - impuesto
+
+    #algoritmo 2...
+    if id_impuesto == 2 and base < 50000:
+        impuesto = 50
+    elif base >= 50000:
+        impuesto = 100
+    monto_final = base - impuesto
+
+    #algoritmo 3...
+    if id_impuesto == 3:
+        impuesto = base * 3 / 100
+    monto_final = base - impuesto
+    return monto_final
+
+
 
 
 # calcular monto base...
