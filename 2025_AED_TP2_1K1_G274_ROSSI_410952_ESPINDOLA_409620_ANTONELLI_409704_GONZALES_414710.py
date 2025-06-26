@@ -146,6 +146,10 @@ def principal():
     nom_primer_benef = None
     cant_nom_primer_benef = 0
 
+    # Requerimiento 6...
+    cant_ordenes = 0
+    op_invalidas_totales = 0
+
     # procesamiento del .txt...
     m = open('ordenes.txt', 'rt')
     timestamp = m.readline()
@@ -158,6 +162,7 @@ def principal():
         id_calc_com = linea[50:52]
         id_calc_imp = linea[52:54]
 
+        cant_ordenes += 1
         moneda = tipo_moneda(cod_orden)
 
         # Contar órdenes por moneda válida, sin importar validez beneficiario
@@ -206,7 +211,11 @@ def principal():
         # cuantas veces sale el primer beneficiario...
         if nom_dest == nom_primer_benef:
             cant_nom_primer_benef += 1
-        
+ 
+    # Requerimiento 6...
+    op_invalidas_totales = cant_minvalida + cant_binvalido
+    porcentaje = op_invalidas_totales * 100 // cant_ordenes
+    
     m.close()
 
 # salidas...
@@ -224,5 +233,6 @@ def principal():
     print(' (r12) - Monto final de esa orden:', monto_final_max)
     print('(r13) - Nombre del primer beneficiario del archivo:', nom_primer_benef)
     print('(r14) - Cantidad de veces que apareció ese mismo nombre:', cant_nom_primer_benef)
+    print('(r15) - Porcentaje de operaciones inválidas sobre el total:', porcentaje)
 
 principal()
