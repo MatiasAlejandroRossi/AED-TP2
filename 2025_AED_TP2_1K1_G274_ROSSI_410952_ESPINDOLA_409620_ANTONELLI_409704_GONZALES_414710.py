@@ -144,6 +144,7 @@ def principal():
 
     # Requerimiento 5...
     nom_primer_benef = None
+    cant_nom_primer_benef = 0
 
     # procesamiento del .txt...
     m = open('ordenes.txt', 'rt')
@@ -202,9 +203,13 @@ def principal():
         if nom_primer_benef is None:
             nom_primer_benef = nom_dest
 
-
+        # cuantas veces sale el primer beneficiario...
+        if nom_dest == nom_primer_benef:
+            cant_nom_primer_benef += 1
+        
     m.close()
 
+# salidas...
     print(' (r1) - Cantidad de ordenes invalidas - moneda no autorizada:', cant_minvalida)
     print(' (r2) - Cantidad de ordenes invalidas - beneficiario mal identificado:', cant_binvalido)
     print(' (r3) - Cantidad de operaciones validas:', cant_oper_validas)
@@ -218,6 +223,6 @@ def principal():
     print(' (r11) - Monto nominal de esa orden:', monto_nominal_max)
     print(' (r12) - Monto final de esa orden:', monto_final_max)
     print('(r13) - Nombre del primer beneficiario del archivo:', nom_primer_benef)
-    # print('(r14) - Cantidad de veces que apareció ese mismo nombre:', cant_nom_primer_benef)
+    print('(r14) - Cantidad de veces que apareció ese mismo nombre:', cant_nom_primer_benef)
 
 principal()
